@@ -1,11 +1,19 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function App() {
   const [reflection, setReflection] = useState("");
   const [mood, setMood] = useState("");
   const [productivity, setProductivity] = useState("");
-  const [entries, setEntries] = useState([]);
+  const [entries, setEntries] = useState(() => {
+    const savedEntries = localStorage.getItem("reflectionEntries");
+
+    return savedEntries ? JSON.parse(savedEntries) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("reflectionEntries", JSON.stringify(entries));
+  }, [entries]);
 
   const handleSave = () => {
     if (!reflection) return;
