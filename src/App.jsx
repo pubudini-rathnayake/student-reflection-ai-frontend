@@ -127,6 +127,42 @@ export default function App() {
           </div>
         </div>
 
+        {/* Dashboard Analytics */}
+
+        <div className="grid md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-white/60 backdrop-blur-lg rounded-3xl p-5 shadow-xl border border-white/40">
+            <p className="text-purple-700 text-sm mb-2">Total Reflections</p>
+
+            <h2 className="text-3xl font-black text-purple-950">
+              {entries.length}
+            </h2>
+          </div>
+
+          <div className="bg-white/60 backdrop-blur-lg rounded-3xl p-5 shadow-xl border border-white/40">
+            <p className="text-purple-700 text-sm mb-2">Latest Mood</p>
+
+            <h2 className="text-2xl font-bold text-purple-950">
+              {entries[0]?.mood || "No Data"}
+            </h2>
+          </div>
+
+          <div className="bg-white/60 backdrop-blur-lg rounded-3xl p-5 shadow-xl border border-white/40">
+            <p className="text-purple-700 text-sm mb-2">Productivity Status</p>
+
+            <h2 className="text-xl font-bold text-purple-950">
+              {entries[0]?.productivity || "No Data"}
+            </h2>
+          </div>
+
+          <div className="bg-white/60 backdrop-blur-lg rounded-3xl p-5 shadow-xl border border-white/40">
+            <p className="text-purple-700 text-sm mb-2">Reflection Streak</p>
+
+            <h2 className="text-3xl font-black text-purple-950">
+              🔥 {entries.length}
+            </h2>
+          </div>
+        </div>
+
         {/* Main Glass Card */}
 
         <div className="bg-white/80 backdrop-blur-lg border border-white/40 shadow-2xl rounded-3xl p-8 space-y-6">
