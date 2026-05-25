@@ -31,6 +31,41 @@ export default function App() {
     setProductivity("");
   };
 
+  const getAIInsight = () => {
+    if (!entries.length) {
+      return "Start writing reflections to receive AI insights.";
+    }
+
+    const latest = entries[0]?.reflection?.toLowerCase() || "";
+
+    const stressWords = [
+      "stress",
+      "tired",
+      "exhausted",
+      "anxious",
+      "burnout",
+      "overwhelmed",
+    ];
+    const positiveWords = [
+      "happy",
+      "motivated",
+      "excited",
+      "calm",
+      "productive",
+      "good",
+    ];
+
+    if (stressWords.some((word) => latest.includes(word))) {
+      return "⚠️ You seem slightly overwhelmed. Consider taking a short break and prioritizing rest.";
+    }
+
+    if (positiveWords.some((word) => latest.includes(word))) {
+      return "✨ You are showing strong positive emotional momentum. Keep going!";
+    }
+
+    return "🌸 Keep reflecting consistently to improve your emotional awareness.";
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -231,6 +266,46 @@ export default function App() {
           >
             ✨ Save Reflection ✨
           </button>
+        </div>
+
+        {/* Weekly Summary */}
+
+        <div className="bg-white/70 backdrop-blur-lg border border-white/40 rounded-3xl p-8 shadow-2xl mb-8">
+          <h2 className="text-3xl font-black text-purple-950 mb-4">
+            📊 Weekly Summary
+          </h2>
+
+          <p className="text-purple-800 text-lg leading-relaxed">
+            You have written{" "}
+            <span className="font-bold text-purple-950">{entries.length}</span>{" "}
+            reflections recently.
+          </p>
+
+          <p className="text-purple-800 text-lg leading-relaxed mt-3">
+            Your latest mood appears to be{" "}
+            <span className="font-bold text-purple-950">
+              {entries[0]?.mood || "Not Available Yet"}
+            </span>
+            .
+          </p>
+
+          <p className="text-purple-800 text-lg leading-relaxed mt-3">
+            {entries.length > 5
+              ? "✨ Amazing consistency! Keep reflecting and growing."
+              : "🌸 Start building your reflection habit consistently."}
+          </p>
+        </div>
+
+        {/* AI Insight Card */}
+
+        <div className="bg-gradient-to-r from-pink-100 via-purple-100 to-blue-100 border border-white/40 rounded-3xl p-8 shadow-2xl mb-8">
+          <h2 className="text-3xl font-black text-purple-950 mb-4">
+            🧠 AI Insight
+          </h2>
+
+          <p className="text-purple-900 text-lg leading-relaxed">
+            {getAIInsight()}
+          </p>
         </div>
 
         {/* Saved Reflections */}
