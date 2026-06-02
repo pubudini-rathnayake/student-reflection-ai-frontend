@@ -1,27 +1,28 @@
+import InsightsPanel from "../components/InsightsPanel";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 
 const sentimentColor = {
-  "Positive": "bg-green-100 text-green-800",
-  "Neutral":  "bg-gray-100 text-gray-700",
-  "Negative": "bg-red-100 text-red-800",
+  Positive: "bg-green-100 text-green-800",
+  Neutral: "bg-gray-100 text-gray-700",
+  Negative: "bg-red-100 text-red-800",
 };
 
 const emotionEmoji = {
-  "Joy":     "😊",
-  "Calm":    "😌",
-  "Sadness": "😢",
-  "Fear":    "😰",
-  "Anger":   "😤",
-  "Stress":  "😵",
+  Joy: "😊",
+  Calm: "😌",
+  Sadness: "😢",
+  Fear: "😰",
+  Anger: "😤",
+  Stress: "😵",
 };
 
 const stressColor = {
-  "Low":    "bg-green-100 text-green-800",
-  "Medium": "bg-yellow-100 text-yellow-800",
-  "High":   "bg-red-100 text-red-800",
+  Low: "bg-green-100 text-green-800",
+  Medium: "bg-yellow-100 text-yellow-800",
+  High: "bg-red-100 text-red-800",
 };
 
 export default function DashboardPage() {
@@ -34,7 +35,8 @@ export default function DashboardPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    api.get("/api/reflections")
+    api
+      .get("/api/reflections")
       .then((res) => setEntries(res.data))
       .catch(() => handleLogout())
       .finally(() => setLoadingEntries(false));
@@ -44,7 +46,11 @@ export default function DashboardPage() {
     if (!reflection) return;
     setSaving(true);
     try {
-      const res = await api.post("/api/reflections", { reflection, mood, productivity });
+      const res = await api.post("/api/reflections", {
+        reflection,
+        mood,
+        productivity,
+      });
       setEntries([res.data, ...entries]);
       setReflection("");
       setMood("");
@@ -64,22 +70,30 @@ export default function DashboardPage() {
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
     return new Date(dateStr).toLocaleDateString("en-US", {
-      month: "short", day: "numeric", year: "numeric",
-      hour: "2-digit", minute: "2-digit",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   // Stats calculations
-  const positiveCount = entries.filter(e => e.sentiment === "Positive").length;
-  const highStressCount = entries.filter(e => e.stressLevel === "High").length;
-  const dominantEmotion = entries.length > 0
-    ? Object.entries(
-        entries.reduce((acc, e) => {
-          if (e.emotion) acc[e.emotion] = (acc[e.emotion] || 0) + 1;
-          return acc;
-        }, {})
-      ).sort((a, b) => b[1] - a[1])[0]?.[0]
-    : null;
+  const positiveCount = entries.filter(
+    (e) => e.sentiment === "Positive",
+  ).length;
+  const highStressCount = entries.filter(
+    (e) => e.stressLevel === "High",
+  ).length;
+  const dominantEmotion =
+    entries.length > 0
+      ? Object.entries(
+          entries.reduce((acc, e) => {
+            if (e.emotion) acc[e.emotion] = (acc[e.emotion] || 0) + 1;
+            return acc;
+          }, {}),
+        ).sort((a, b) => b[1] - a[1])[0]?.[0]
+      : null;
 
   return (
     <motion.div
@@ -93,12 +107,13 @@ export default function DashboardPage() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-purple-400/20 rounded-full blur-3xl" />
 
       <div className="relative z-10 w-full max-w-2xl">
-
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex justify-between items-center mb-6">
             <div className="inline-block px-4 py-2 rounded-full bg-white/40 backdrop-blur-md border border-white/30">
-              <p className="text-sm text-purple-900 font-medium">🌸 AI-Powered Student Wellness</p>
+              <p className="text-sm text-purple-900 font-medium">
+                🌸 AI-Powered Student Wellness
+              </p>
             </div>
             <button
               onClick={handleLogout}
@@ -115,7 +130,8 @@ export default function DashboardPage() {
             </span>
           </h1>
           <p className="text-lg md:text-xl text-purple-800 max-w-2xl mx-auto leading-relaxed">
-            An AI-powered reflection platform tracking your mood, emotions, stress, and growth.
+            An AI-powered reflection platform tracking your mood, emotions,
+            stress, and growth.
           </p>
         </div>
 
@@ -123,20 +139,28 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-white/60 backdrop-blur-lg rounded-3xl p-5 shadow-xl border border-white/40">
             <p className="text-purple-700 text-sm mb-2">Total Reflections</p>
-            <h2 className="text-3xl font-black text-purple-950">{entries.length}</h2>
+            <h2 className="text-3xl font-black text-purple-950">
+              {entries.length}
+            </h2>
           </div>
           <div className="bg-white/60 backdrop-blur-lg rounded-3xl p-5 shadow-xl border border-white/40">
             <p className="text-purple-700 text-sm mb-2">Positive Days</p>
-            <h2 className="text-3xl font-black text-green-700">{positiveCount}</h2>
+            <h2 className="text-3xl font-black text-green-700">
+              {positiveCount}
+            </h2>
           </div>
           <div className="bg-white/60 backdrop-blur-lg rounded-3xl p-5 shadow-xl border border-white/40">
             <p className="text-purple-700 text-sm mb-2">High Stress Days</p>
-            <h2 className="text-3xl font-black text-red-600">{highStressCount}</h2>
+            <h2 className="text-3xl font-black text-red-600">
+              {highStressCount}
+            </h2>
           </div>
           <div className="bg-white/60 backdrop-blur-lg rounded-3xl p-5 shadow-xl border border-white/40">
             <p className="text-purple-700 text-sm mb-2">Top Emotion</p>
             <h2 className="text-2xl font-black text-purple-950">
-              {dominantEmotion ? `${emotionEmoji[dominantEmotion]} ${dominantEmotion}` : "–"}
+              {dominantEmotion
+                ? `${emotionEmoji[dominantEmotion]} ${dominantEmotion}`
+                : "–"}
             </h2>
           </div>
         </div>
@@ -144,7 +168,9 @@ export default function DashboardPage() {
         {/* Input Card */}
         <div className="bg-white/80 backdrop-blur-lg border border-white/40 shadow-2xl rounded-3xl p-8 space-y-6 mb-8">
           <div>
-            <label className="block text-purple-900 mb-3 text-lg">🌸 Today's Reflection</label>
+            <label className="block text-purple-900 mb-3 text-lg">
+              🌸 Today's Reflection
+            </label>
             <textarea
               value={reflection}
               onChange={(e) => setReflection(e.target.value)}
@@ -154,7 +180,9 @@ export default function DashboardPage() {
           </div>
 
           <div>
-            <label className="block text-purple-900 mb-3 text-lg">😊 Mood</label>
+            <label className="block text-purple-900 mb-3 text-lg">
+              😊 Mood
+            </label>
             <select
               value={mood}
               onChange={(e) => setMood(e.target.value)}
@@ -170,7 +198,9 @@ export default function DashboardPage() {
           </div>
 
           <div>
-            <label className="block text-purple-900 mb-3 text-lg">⭐ Productivity</label>
+            <label className="block text-purple-900 mb-3 text-lg">
+              ⭐ Productivity
+            </label>
             <select
               value={productivity}
               onChange={(e) => setProductivity(e.target.value)}
@@ -200,9 +230,13 @@ export default function DashboardPage() {
           )}
         </div>
 
+        <InsightsPanel />
+
         {/* Entries */}
         {loadingEntries ? (
-          <p className="text-center text-purple-700 animate-pulse">Loading your reflections...</p>
+          <p className="text-center text-purple-700 animate-pulse">
+            Loading your reflections...
+          </p>
         ) : (
           <div className="space-y-6">
             {entries.map((entry) => (
@@ -210,13 +244,22 @@ export default function DashboardPage() {
                 key={entry.id}
                 className="bg-white/70 backdrop-blur-md rounded-3xl p-6 shadow-lg border border-white/40 hover:scale-[1.01] transition-all duration-300"
               >
-                <p className="text-purple-900 mb-4 text-base leading-relaxed">{entry.reflection}</p>
+                <p className="text-purple-900 mb-4 text-base leading-relaxed">
+                  {entry.reflection}
+                </p>
 
                 {/* Sentiment / Emotion / Stress badges */}
                 <div className="flex flex-wrap gap-2 mb-4">
                   {entry.sentiment && (
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${sentimentColor[entry.sentiment] || "bg-gray-100 text-gray-700"}`}>
-                      {entry.sentiment === "Positive" ? "😊" : entry.sentiment === "Negative" ? "😔" : "😐"} {entry.sentiment}
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${sentimentColor[entry.sentiment] || "bg-gray-100 text-gray-700"}`}
+                    >
+                      {entry.sentiment === "Positive"
+                        ? "😊"
+                        : entry.sentiment === "Negative"
+                          ? "😔"
+                          : "😐"}{" "}
+                      {entry.sentiment}
                     </span>
                   )}
                   {entry.emotion && (
@@ -225,7 +268,9 @@ export default function DashboardPage() {
                     </span>
                   )}
                   {entry.stressLevel && (
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${stressColor[entry.stressLevel] || "bg-gray-100"}`}>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${stressColor[entry.stressLevel] || "bg-gray-100"}`}
+                    >
                       ⚡ Stress: {entry.stressLevel}
                     </span>
                   )}
@@ -241,12 +286,18 @@ export default function DashboardPage() {
                   )}
                 </div>
 
-                <p className="text-purple-400 text-xs mb-4">{formatDate(entry.createdAt)}</p>
+                <p className="text-purple-400 text-xs mb-4">
+                  {formatDate(entry.createdAt)}
+                </p>
 
                 {entry.aiInsight && (
                   <div className="bg-gradient-to-r from-pink-50 via-purple-50 to-blue-50 border border-purple-100 rounded-2xl p-4">
-                    <p className="text-xs text-purple-500 font-semibold mb-1">🧠 AI Insight</p>
-                    <p className="text-purple-800 text-sm leading-relaxed">{entry.aiInsight}</p>
+                    <p className="text-xs text-purple-500 font-semibold mb-1">
+                      🧠 AI Insight
+                    </p>
+                    <p className="text-purple-800 text-sm leading-relaxed">
+                      {entry.aiInsight}
+                    </p>
                   </div>
                 )}
               </div>
@@ -254,7 +305,9 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="text-center mt-8 text-purple-700">✨ Keep growing beautifully ✨</div>
+        <div className="text-center mt-8 text-purple-700">
+          ✨ Keep growing beautifully ✨
+        </div>
       </div>
     </motion.div>
   );
