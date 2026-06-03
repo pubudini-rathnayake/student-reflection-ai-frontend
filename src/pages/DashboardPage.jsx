@@ -1,6 +1,6 @@
 import InsightsPanel from "../components/InsightsPanel";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 
@@ -33,6 +33,42 @@ export default function DashboardPage() {
   const [saving, setSaving] = useState(false);
   const [loadingEntries, setLoadingEntries] = useState(true);
   const navigate = useNavigate();
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef(null);
+
+  const startVoice = () => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert(
+        "Voice journaling is not supported in this browser. Please use Chrome.",
+      );
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    recognition.onresult = (event) => {
+      const transcript = Array.from(event.results)
+        .map((r) => r[0].transcript)
+        .join("");
+      setReflection(transcript);
+    };
+
+    recognition.onend = () => setIsListening(false);
+    recognition.start();
+    recognitionRef.current = recognition;
+    setIsListening(true);
+  };
+
+  const stopVoice = () => {
+    recognitionRef?.current?.stop();
+    setIsListening(false);
+  };
 
   useEffect(() => {
     api
@@ -179,6 +215,30 @@ export default function DashboardPage() {
             />
           </div>
 
+          {/* Add this right after the textarea, inside the input card */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={startVoice}
+              disabled={isListening}
+              className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${
+                isListening
+                  ? "bg-red-100 text-red-700 animate-pulse"
+                  : "bg-purple-100 text-purple-800 hover:bg-purple-200"
+              }`}
+            >
+              🎙️{" "}
+              {isListening ? "Listening... (click to stop)" : "Voice Journal"}
+            </button>
+            {isListening && (
+              <button
+                onClick={stopVoice}
+                className="px-4 py-3 rounded-2xl bg-red-100 text-red-700 text-sm font-semibold hover:bg-red-200 transition"
+              >
+                ⏹ Stop
+              </button>
+            )}
+          </div>
+
           <div>
             <label className="block text-purple-900 mb-3 text-lg">
               😊 Mood
@@ -284,6 +344,13 @@ export default function DashboardPage() {
                       {entry.productivity}
                     </span>
                   )}
+                  {/* Add inside the badges flex div, after the existing badges */}
+                  {entry.detectedLanguage &&
+                    entry.detectedLanguage !== "English" && (
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800">
+                        🌍 {entry.detectedLanguage}
+                      </span>
+                    )}
                 </div>
 
                 <p className="text-purple-400 text-xs mb-4">
